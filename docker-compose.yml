@@ -17,6 +17,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       # (this is just an example, not intended to be a production configuration)
+    ports:
+      - 8036:3306
+    volumes:
+      - ./db:/var/lib/mysql
   
   phpmyadmin:
     image: phpmyadmin
