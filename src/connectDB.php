@@ -1,5 +1,10 @@
 <?php 
 $user = "root";
 $pass = "root";
-$mysql = new PDO('mysql:host=127.0.0.1:8036;dbname=portfolio2024', $user, $pass);
+$host = "db";
+$mysql = new PDO("mysql:host=$host;port=3306;dbname=portfolio2024", $user, $pass);
+
+if(!$mysql){
+  echo 'Connection Error';
+}
 ?>
