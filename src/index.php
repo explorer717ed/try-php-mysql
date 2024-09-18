@@ -1,7 +1,6 @@
 <?php
 require 'connectDB.php';
 
-$mysql = new mysqli("db", "root", "root", "portfolio2024");
 
 $sql = "SELECT * FROM works";
 
