@@ -1,15 +1,18 @@
 <?php
+require 'connectDB.php';
 $inputVal = [
+  "idTitle" => "",
   "title" => "",
   "projectType" => "",
   "projectScope" => "",
   "imgUrl" => "",
 ];
 
-$validErr = ["title" => ""];
+$validErr = ["title" => "", "idTitle" => ""];
 
 if(isset($_POST['addWork'])){
   
+  $inputVal['idTitle'] = htmlspecialchars($_POST['idTitle']);
   $inputVal['title'] = htmlspecialchars($_POST['title']);
   $inputVal['projectType'] = htmlspecialchars($_POST['projectType']);
   $inputVal['projectScope'] = htmlspecialchars($_POST['projectScope']);
@@ -19,16 +22,29 @@ if(isset($_POST['addWork'])){
   if(empty($_POST['title'])){
     $validErr['title'] = 'YOURE TITLE MISSING';
   }
+  if(empty($_POST['idTitle'])){
+    $validErr['idTitle'] = 'YOURE ID MISSING';
+  }
 
   if(array_filter($validErr)){ // Loop Array. Default value to be loose true.
-
+    // sth wrong
   }else{
-    // $inputVal = [
-    //   "title" => "",
-    //   "projectType" => "",
-    //   "projectScope" => "",
-    //   "imgUrl" => "",
-    // ];
+    $stmt = $db->prepare("INSERT INTO works (idTitle, title, projectType, projectScope, imgUrl) VALUES(?,?,?,?,?)");
+    $stmt->bindValue(1, $inputVal['idTitle']);
+    $stmt->bindValue(2, $inputVal['title']);
+    $stmt->bindValue(3, $inputVal['projectType']);
+    $stmt->bindValue(4, $inputVal['projectScope']);
+    $stmt->bindValue(5, $inputVal['imgUrl']);
+
+    $stmt->execute();
+
+    $inputVal = [
+      "idTitle" => "",
+      "title" => "",
+      "projectType" => "",
+      "projectScope" => "",
+      "imgUrl" => "",
+    ];
   }
   ### (END) POST CHECK ###
 }
@@ -50,6 +66,11 @@ if(isset($_POST['addWork'])){
     <h2>FORM</h2>
     <form action="formAdd.php" method="POST">
       
+      <div>
+        <label for="idTitle" class="block text-gray-900">id:</label>
+        <input type="text" name="idTitle" value="<?php echo $inputVal['idTitle'] ?>" class="block bg-slate-100 w-full flex-1 border-0 ring-1 ring-gray-300 py-1.5 rounded pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0">
+        <?php if($validErr['idTitle']) echo "<p class='text-red-500'>{$validErr['idTitle']}</p>"; ?>
+      </div>
       <div>
         <label for="title" class="block text-gray-900">Title:</label>
         <input type="text" name="title" value="<?php echo $inputVal['title'] ?>" class="block bg-slate-100 w-full flex-1 border-0 ring-1 ring-gray-300 py-1.5 rounded pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0">

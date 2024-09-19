@@ -2,7 +2,6 @@
 require 'connectDB.php';
 
 
-$sql = "SELECT * FROM works";
 
 // if($result = $mysql->query($sql)){
 //   while($data = $result->fetch_object()){
@@ -34,9 +33,11 @@ $slogan = "hello from \"dockereerer phppp myyyysql\""; //double quote and escape
 </head>
 <body>
   <?php require('header.php') ?>
-  <?php 
-    echo "<h1> $slogan </h1>";
-  ?>
-  <a href="/review.php">REVIEW</a>
+  <?php echo "<h1> $slogan </h1>"; ?>
+  <ul>
+    <li><a href="/review.php" class="text-blue-700 underline">REVIEW</a></li>
+    <li><a href="/pdo.php" class="text-blue-700 underline">PDO</a></li>
+  </ul>
+
 </body>
 </html>
