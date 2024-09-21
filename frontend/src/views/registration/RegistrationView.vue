@@ -56,7 +56,7 @@ const formErrMsg = ref({
   name: ""
 })
 
-const checkFormValid = () => {
+const checkFormValid = async () => {
   formErrMsg.value = {
     username: "",
     pass: "",
@@ -98,12 +98,14 @@ const checkFormValid = () => {
     valid = false
   }
 
+  if(await checkUserExist() == false) valid = false
+
   return valid
 }
 
 
 const onSubmit = async () => {
-  const isValid = checkFormValid()
+  const isValid = await checkFormValid()
   if(!isValid) return
 
   // TODO: CAPTCHA
@@ -133,6 +135,8 @@ const checkUserExist = async () => {
     
     formErrMsg.value.username = data.payload.is_unique ? '' : "This user already exists."
     
+    return !data.payload.is_unique
+
   } catch (error) {
     console.error(error);
   }
