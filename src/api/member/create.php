@@ -17,11 +17,17 @@ try {
   if(!$data['name']) throw new Exception("Need name.", 1);
   if (!filter_var($data['username'], FILTER_VALIDATE_EMAIL)) throw new Exception("Invalid email format.", 1);
   
+  # Sanitize & Hash #
+  // Q: Do I need 'htmlspecialchars' when I'm using JSON api...?
+  $username = htmlspecialchars($data['username']);
+  $password = password_hash($data['password'], PASSWORD_DEFAULT);
+  $name = htmlspecialchars($data['name']);
+
   # SQL #
   $stmt = $db->prepare("INSERT INTO Members (username, password, name, oauth_type) VALUES (?,?,?,?)");
-  $stmt->bindValue(1, $data['username']);
-  $stmt->bindValue(2, $data['password']);
-  $stmt->bindValue(3, $data['name']);
+  $stmt->bindValue(1, $username);
+  $stmt->bindValue(2, $password);
+  $stmt->bindValue(3, $name);
   $stmt->bindValue(4, "manual");
   
   $stmt->execute();

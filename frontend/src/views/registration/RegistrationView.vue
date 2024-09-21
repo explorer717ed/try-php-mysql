@@ -4,7 +4,7 @@
     <form class="form" @submit="onSubmit" action="javascript:;" novalidate>
       <div class="form_item">
         <label for="sign_username" class="form_item-label form_item-label--required">Email (username):</label>
-        <input v-model="dataSignup.username" @change="checkUserExist" @keydown.space.prevent required type="email" id="sign_username" class="form_item-input" placeholder="abc@mail.com">
+        <input v-model="dataSignup.username" @change="checkUserUnique" @keydown.space.prevent required type="email" id="sign_username" class="form_item-input" placeholder="abc@mail.com">
         <div :class="{'form_item-tip': true, 'form_item-tip--error': formErrMsg.username }">{{ formErrMsg.username }}</div>
       </div>
       <div class="form_item">
@@ -98,7 +98,8 @@ const checkFormValid = async () => {
     valid = false
   }
 
-  if(await checkUserExist() == false) valid = false
+  const isUnique = await checkUserUnique()
+  if(!isUnique) valid = false
 
   return valid
 }
@@ -127,15 +128,15 @@ const onSubmit = async () => {
   }
 }
 
-const checkUserExist = async () => {
+const checkUserUnique = async () => {
   try {
-    const data = await post('/member/check_duplicate.php', {
+    const data = await post('/member/check_unique.php', {
       username: dataSignup.value.username,
     })
     
     formErrMsg.value.username = data.payload.is_unique ? '' : "This user already exists."
     
-    return !data.payload.is_unique
+    return data.payload.is_unique
 
   } catch (error) {
     console.error(error);

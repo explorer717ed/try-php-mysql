@@ -14,9 +14,12 @@ try {
   if(is_null($data)) throw new Exception("Need request body.", 1);
   if(!$data['username']) throw new Exception("Need username.", 1);
 
+  # Sanitize #
+  $username = htmlspecialchars($data['username']);
+
   # SQL #
   $stmt = $db->prepare("SELECT COUNT(id) AS count FROM Members WHERE username = ?");
-  $stmt->bindValue(1, $data['username']);
+  $stmt->bindValue(1, $username);
   $stmt->execute();
 
   $count = $stmt->fetch(PDO::FETCH_ASSOC);
