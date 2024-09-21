@@ -26,8 +26,6 @@ try {
   $stmt->execute();
   $rsp['id'] = $db->lastInsertId();
 
-  $stmt->close();
-
 } catch (\Throwable $th) {
   $msg = $th->getMessage();
   $is_success = false;

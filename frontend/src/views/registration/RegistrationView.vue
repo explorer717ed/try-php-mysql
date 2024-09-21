@@ -3,26 +3,24 @@
     <h1 class="page_title">Sign up</h1>
     <form class="form" @submit="onSubmit" action="javascript:;" novalidate>
       <div class="form_item">
-        <label for="sign_username" class="form_item-label">Email (username):</label>
-        <input v-model="dataSignup.username" @change="checkUserExist" required type="email" id="sign_username" class="form_item-input" placeholder="abc@mail.com">
+        <label for="sign_username" class="form_item-label form_item-label--required">Email (username):</label>
+        <input v-model="dataSignup.username" @change="checkUserExist" @keydown.space.prevent required type="email" id="sign_username" class="form_item-input" placeholder="abc@mail.com">
         <div :class="{'form_item-tip': true, 'form_item-tip--error': formErrMsg.username }">{{ formErrMsg.username }}</div>
       </div>
       <div class="form_item">
-        <label for="sign_pass" class="form_item-label">Password:</label>
-        <input v-model="dataSignup.pass" required type="password" id="sign_pass" class="form_item-input" placeholder="Input your password">
-        <div class="form_item-tip">
-          The password should be at least 8 alphanumeric, include 1 number and 1 alphabet.
-        </div>
+        <label for="sign_pass" class="form_item-label form_item-label--required">Password:</label>
+        <input v-model="dataSignup.pass" @keydown.space.prevent required type="password" id="sign_pass" class="form_item-input" placeholder="Input your password">
+        <div :class="{'form_item-tip': true, 'form_item-tip--error': formErrMsg.pass }">{{ formErrMsg.pass || "The password should be at least 8 alphanumeric, include 1 number and 1 alphabet." }}</div>
       </div>
       <div class="form_item">
-        <label for="sign_confirm_pass" class="form_item-label">Confirm Password:</label>
-        <input v-model="dataSignup.confirm" required type="password" id="sign_confirm_pass" class="form_item-input" placeholder="Input your password again">
-        <div class="form_item-tip"></div>
+        <label for="sign_confirm_pass" class="form_item-label form_item-label--required">Confirm Password:</label>
+        <input v-model="dataSignup.confirm" @keydown.space.prevent required type="password" id="sign_confirm_pass" class="form_item-input" placeholder="Input your password again">
+        <div :class="{'form_item-tip': true, 'form_item-tip--error': formErrMsg.confirm }">{{ formErrMsg.confirm }}</div>
       </div>
       <div class="form_item">
-        <label for="sign_name" class="form_item-label">Your Name:</label>
+        <label for="sign_name" class="form_item-label form_item-label--required">Your Name:</label>
         <input v-model="dataSignup.name" required type="text" id="sign_name" class="form_item-input" placeholder="John Lee">
-        <div class="form_item-tip"></div>
+        <div :class="{'form_item-tip': true, 'form_item-tip--error': formErrMsg.name }">{{ formErrMsg.name }}</div>
       </div>
       <button type="submit" class="btn btn--primary">NEXT</button>
       <div>
@@ -41,7 +39,7 @@ import { ref } from 'vue';
 import { useFetch } from "@/composables/useFetch";
 import { useRouter } from 'vue-router';
 
-const router = useRouter();
+const router = useRouter()
 const { post } = useFetch()
 
 const dataSignup = ref({
@@ -55,24 +53,61 @@ const formErrMsg = ref({
   username: "",
   pass: "",
   confirm: "",
+  name: ""
 })
 
-const checkSignupValidity = () => {
-  return true
+const checkFormValid = () => {
+  formErrMsg.value = {
+    username: "",
+    pass: "",
+    confirm: "",
+    name: ""
+  }
+  let valid = true
+
+  if(!dataSignup.value.username){
+    formErrMsg.value.username = "Email (username) is required."
+    valid = false
+  }
+  if(!dataSignup.value.pass){
+    formErrMsg.value.pass = "Password is required."
+    valid = false
+  }
+  if(!dataSignup.value.confirm){
+    formErrMsg.value.confirm = "Confirm Password is required."
+    valid = false
+  }
+  if(!dataSignup.value.name.trim()){
+    formErrMsg.value.name = "Your Name is required."
+    valid = false
+  }
+  if(!valid) return valid
+
+  const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+  if(!regexEmail.test(dataSignup.value.username)){
+    formErrMsg.value.username = "Please input a correct email format."
+    valid = false
+  }
+  const regexPass = /^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/
+  if(!regexPass.test(dataSignup.value.pass)){
+    formErrMsg.value.pass = "The password should be at least 8 alphanumeric, include 1 number and 1 alphabet.."
+    valid = false
+  }
+  if(dataSignup.value.confirm !== dataSignup.value.pass){
+    formErrMsg.value.confirm = "Please make sure your passwords match."
+    valid = false
+  }
+
+  return valid
 }
 
 
 const onSubmit = async () => {
-  // Form validation
-  const isValid = checkSignupValidity()
-  console.log('isValid:', isValid);
-  
-  
+  const isValid = checkFormValid()
+  if(!isValid) return
 
   // TODO: CAPTCHA
 
-
-  // Submit
   try {
     const data = await post('/member/create.php', {
       username: dataSignup.value.username,
@@ -91,13 +126,12 @@ const onSubmit = async () => {
 }
 
 const checkUserExist = async () => {
-  console.log('exist', dataSignup.value.username);
   try {
     const data = await post('/member/check_duplicate.php', {
       username: dataSignup.value.username,
     })
-
-    formErrMsg.value.username = data.is_unique ? '' : "This user already exists."
+    
+    formErrMsg.value.username = data.payload.is_unique ? '' : "This user already exists."
     
   } catch (error) {
     console.error(error);
@@ -126,6 +160,10 @@ const checkUserExist = async () => {
   display: inline-block;
   text-align: left;
 }
+.form_item-label--required::before{
+  content: '* ';
+  color: salmon;
+}
 .form_item-input{
   width: 100%;
   padding: 10px 10px;
@@ -145,6 +183,7 @@ const checkUserExist = async () => {
   margin-left: auto;
   min-height: 1rem;
   margin-top: 5px;
+  padding-left: 10px;
   font-size: .8rem;
 }
 

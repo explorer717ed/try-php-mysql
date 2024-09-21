@@ -21,8 +21,6 @@ try {
 
   $count = $stmt->fetch(PDO::FETCH_ASSOC);
   $rsp['is_unique'] = $count['count'] == 0;
-  
-  $stmt->close();
 
 } catch (\Throwable $th) {
   $msg = $th->getMessage();
