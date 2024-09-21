@@ -13,19 +13,15 @@ try {
   # validation #
   if(is_null($data)) throw new Exception("Need request body.", 1);
   if(!$data['username']) throw new Exception("Need username.", 1);
-  if(!$data['password']) throw new Exception("Need password.", 1);
-  if(!$data['name']) throw new Exception("Need name.", 1);
-  
-  # SQL #
-  $stmt = $db->prepare("INSERT INTO Members (username, password, name, oauth_type) VALUES (?,?,?,?)");
-  $stmt->bindValue(1, $data['username']);
-  $stmt->bindValue(2, $data['password']);
-  $stmt->bindValue(3, $data['name']);
-  $stmt->bindValue(4, "manual");
-  
-  $stmt->execute();
-  $rsp['id'] = $db->lastInsertId();
 
+  # SQL #
+  $stmt = $db->prepare("SELECT COUNT(id) AS count FROM Members WHERE username = ?");
+  $stmt->bindValue(1, $data['username']);
+  $stmt->execute();
+
+  $count = $stmt->fetch(PDO::FETCH_ASSOC);
+  $rsp['is_unique'] = $count['count'] == 0;
+  
   $stmt->close();
 
 } catch (\Throwable $th) {

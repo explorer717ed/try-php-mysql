@@ -4,23 +4,25 @@
     <form class="form" @submit="onSubmit" action="javascript:;" novalidate>
       <div class="form_item">
         <label for="sign_username" class="form_item-label">Email (username):</label>
-        <input v-model="dataSignup.username" required type="email" id="sign_username" class="form_item-input" placeholder="abc@mail.com">
-
+        <input v-model="dataSignup.username" @change="checkUserExist" required type="email" id="sign_username" class="form_item-input" placeholder="abc@mail.com">
+        <div :class="{'form_item-tip': true, 'form_item-tip--error': formErrMsg.username }">{{ formErrMsg.username }}</div>
       </div>
       <div class="form_item">
         <label for="sign_pass" class="form_item-label">Password:</label>
         <input v-model="dataSignup.pass" required type="password" id="sign_pass" class="form_item-input" placeholder="Input your password">
         <div class="form_item-tip">
-          <small>The password should be at least 8 alphanumeric, include 1 number and 1 alphabet.</small>
+          The password should be at least 8 alphanumeric, include 1 number and 1 alphabet.
         </div>
       </div>
       <div class="form_item">
         <label for="sign_confirm_pass" class="form_item-label">Confirm Password:</label>
         <input v-model="dataSignup.confirm" required type="password" id="sign_confirm_pass" class="form_item-input" placeholder="Input your password again">
+        <div class="form_item-tip"></div>
       </div>
       <div class="form_item">
         <label for="sign_name" class="form_item-label">Your Name:</label>
         <input v-model="dataSignup.name" required type="text" id="sign_name" class="form_item-input" placeholder="John Lee">
+        <div class="form_item-tip"></div>
       </div>
       <button type="submit" class="btn btn--primary">NEXT</button>
       <div>
@@ -49,9 +51,16 @@ const dataSignup = ref({
   name: ''
 })
 
+const formErrMsg = ref({
+  username: "",
+  pass: "",
+  confirm: "",
+})
+
 const checkSignupValidity = () => {
   return true
 }
+
 
 const onSubmit = async () => {
   // Form validation
@@ -81,6 +90,19 @@ const onSubmit = async () => {
   }
 }
 
+const checkUserExist = async () => {
+  console.log('exist', dataSignup.value.username);
+  try {
+    const data = await post('/member/check_duplicate.php', {
+      username: dataSignup.value.username,
+    })
+
+    formErrMsg.value.username = data.is_unique ? '' : "This user already exists."
+    
+  } catch (error) {
+    console.error(error);
+  }
+}
 </script>
 
 <style scoped>
@@ -96,7 +118,7 @@ const onSubmit = async () => {
 }
 .form_item{
   margin-top: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .form_item-label{
   width: 100%;
@@ -121,6 +143,12 @@ const onSubmit = async () => {
 .form_item-tip{
   text-align: left;
   margin-left: auto;
+  min-height: 1rem;
+  margin-top: 5px;
+  font-size: .8rem;
 }
 
+.form_item-tip--error{
+  color: salmon;
+}
 </style>
