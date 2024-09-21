@@ -15,6 +15,7 @@ try {
   if(!$data['username']) throw new Exception("Need username.", 1);
   if(!$data['password']) throw new Exception("Need password.", 1);
   if(!$data['name']) throw new Exception("Need name.", 1);
+  if (!filter_var($data['username'], FILTER_VALIDATE_EMAIL)) throw new Exception("Invalid email format.", 1);
   
   # SQL #
   $stmt = $db->prepare("INSERT INTO Members (username, password, name, oauth_type) VALUES (?,?,?,?)");
