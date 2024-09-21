@@ -129,6 +129,8 @@ const onSubmit = async () => {
 }
 
 const checkUserUnique = async () => {
+  if(!dataSignup.value.username) return
+
   try {
     const data = await post('/member/check_unique.php', {
       username: dataSignup.value.username,
