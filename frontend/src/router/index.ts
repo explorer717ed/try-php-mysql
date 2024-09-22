@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import RegistrationView from '@/views/registration/RegistrationView.vue'
-import RegistrationComplese from '@/views/registration/RegistrationComplese.vue'
+import RegistrationComplete from '@/views/registration/RegistrationComplete.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,7 +19,7 @@ const router = createRouter({
     {
       path: '/registration/complete',
       name: 'registration-complete',
-      component: RegistrationComplese
+      component: RegistrationComplete
     },
   ]
 })
