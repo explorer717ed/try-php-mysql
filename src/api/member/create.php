@@ -13,7 +13,9 @@ try {
   # validation #
   if(is_null($data)) throw new Exception("Need request body.", 1);
   if(!$data['username']) throw new Exception("Need username.", 1);
+  if (!filter_var($data['username'], FILTER_VALIDATE_EMAIL)) throw new Exception("Wrong username (email) format.", 1);
   if(!$data['password']) throw new Exception("Need password.", 1);
+  if(!preg_match("/^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/", $data['password'])) throw new Exception("Wrong password format.", 1);
   if(!$data['name']) throw new Exception("Need name.", 1);
   if (!filter_var($data['username'], FILTER_VALIDATE_EMAIL)) throw new Exception("Invalid email format.", 1);
   
