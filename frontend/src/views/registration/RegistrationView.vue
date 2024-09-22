@@ -65,36 +65,34 @@ const checkFormValid = async () => {
   }
   let valid = true
 
+  const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
   if(!dataSignup.value.username){
     formErrMsg.value.username = "Email (username) is required."
     valid = false
-  }
-  if(!dataSignup.value.pass){
-    formErrMsg.value.pass = "Password is required."
-    valid = false
-  }
-  if(!dataSignup.value.confirm){
-    formErrMsg.value.confirm = "Confirm Password is required."
-    valid = false
-  }
-  if(!dataSignup.value.name.trim()){
-    formErrMsg.value.name = "Your Name is required."
-    valid = false
-  }
-  if(!valid) return valid
-
-  const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
-  if(!regexEmail.test(dataSignup.value.username)){
+  }else if(!regexEmail.test(dataSignup.value.username)){
     formErrMsg.value.username = "Please input a correct email format."
     valid = false
   }
+
   const regexPass = /^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/
-  if(!regexPass.test(dataSignup.value.pass)){
+  if(!dataSignup.value.pass){
+    formErrMsg.value.pass = "Password is required."
+    valid = false
+  } else if(!regexPass.test(dataSignup.value.pass)){
     formErrMsg.value.pass = "The password should be at least 8 alphanumeric, include 1 number and 1 alphabet.."
     valid = false
   }
-  if(dataSignup.value.confirm !== dataSignup.value.pass){
+
+  if(!dataSignup.value.confirm){
+    formErrMsg.value.confirm = "Confirm Password is required."
+    valid = false
+  }else if(dataSignup.value.confirm !== dataSignup.value.pass){
     formErrMsg.value.confirm = "Please make sure your passwords match."
+    valid = false
+  }
+  
+  if(!dataSignup.value.name.trim()){
+    formErrMsg.value.name = "Your Name is required."
     valid = false
   }
 

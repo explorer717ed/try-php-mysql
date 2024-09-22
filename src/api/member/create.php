@@ -18,7 +18,8 @@ try {
   if(!preg_match("/^(?=.*\d)(?=.*[a-zA-Z]).{8,}$/", $data['password'])) throw new Exception("Wrong password format.", 1);
   if(!$data['name']) throw new Exception("Need name.", 1);
   if (!filter_var($data['username'], FILTER_VALIDATE_EMAIL)) throw new Exception("Invalid email format.", 1);
-  
+  // TODO: check username unique.
+
   # Sanitize & Hash #
   // Q: Do I need 'htmlspecialchars' when I'm using JSON api...?
   $username = htmlspecialchars($data['username']);
@@ -34,6 +35,8 @@ try {
   
   $stmt->execute();
   $rsp['id'] = $db->lastInsertId();
+
+  // TODO: next step, email verification
 
 } catch (\Throwable $th) {
   $msg = $th->getMessage();
